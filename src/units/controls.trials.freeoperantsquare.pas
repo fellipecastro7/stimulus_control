@@ -55,9 +55,10 @@ type
     FStimulus : TFreeSquare;
     procedure LoosePoints;
     procedure ConditionalStimulusStarted(Sender: TObject);
-    procedure ConditionalStimulusStopped(Sender: TObject);
+    //procedure ConditionalStimulusStopped(Sender: TObject);
     procedure ConditionalStimulusStoppedHighTone(Sender: TObject);
-    procedure CustomConsequenceStop(Sender: TObject);
+    procedure ConditionalStimulusStopped8Seconds(Sender: TObject);
+    //procedure CustomConsequenceStop(Sender: TObject);
     procedure Consequence(Sender: TObject);
     procedure Response(Sender: TObject);
     procedure ResponseReady(Sender: TObject);
@@ -167,10 +168,15 @@ begin
       { do nothing }
     end;
 
-    ttB1, ttB2, ttB3, ttC1 :  begin
+    ttB1, ttB2: begin
+      { do nothing }
+    end;
+
+    ttB3, ttC1 :  begin
       SerialSound.OnStart := @ConditionalStimulusStarted;
-      SerialSound.OnStopTone := @ConditionalStimulusStopped;
-      SerialSound.OnStopLaught := @CustomConsequenceStop;
+      //SerialSound.OnStopTone := @ConditionalStimulusStopped;
+      //SerialSound.OnStopLaught := @CustomConsequenceStop;
+      SerialSound.OnStop8Seconds := @ConditionalStimulusStopped8Seconds;
       SerialSound.OnStopToneHigh := @ConditionalStimulusStoppedHighTone;
     end;
   end;
@@ -272,47 +278,72 @@ end;
 
 procedure TFreeOperantSquareTrial.ConditionalStimulusStarted(Sender: TObject);
 begin
-  LogEvent('TomBaixo.Inicio');
-end;
-
-procedure TFreeOperantSquareTrial.ConditionalStimulusStopped(Sender: TObject);
-begin
   case FTrialType of
-    ttA1, ttA2, ttC1 : begin
+    ttB3, ttC1 : begin
+      Parent.Color := clGray;
+      LogEvent('TelaCinza.Inicio');
+    end;
+    else begin
       { do nothing }
     end;
-
-    ttB1 : begin
-      //LoosePoints;
-    end;
-
-    ttB2 : begin
-      CustomConsequence.Start;
-    end;
-
-    ttB3 : begin
-      CustomConsequence.Start;
-    end;
   end;
-  LogEvent('TomBaixo.Fim');
 end;
+
+//procedure TFreeOperantSquareTrial.ConditionalStimulusStopped(Sender: TObject);
+//begin
+//  case FTrialType of
+//    ttA1, ttA2, ttC1 : begin
+//      { do nothing }
+//    end;
+//
+//    ttB1 : begin
+//      //LoosePoints;
+//    end;
+//
+//    ttB2 : begin
+//      CustomConsequence.Start;
+//    end;
+//
+//    ttB3 : begin
+//      CustomConsequence.Start;
+//    end;
+//  end;
+//  LogEvent('TomBaixo.Fim');
+//end;
 
 procedure TFreeOperantSquareTrial.ConditionalStimulusStoppedHighTone(Sender: TObject);
 begin
+  Parent.Color := clGreen;
+  LogEvent('TelaCinza.Fim');
   LoosePoints;
   LogEvent('TomAlto.Fim' + #9 + CounterManager.SessionPointsTopRight.ToString);
 end;
 
-procedure TFreeOperantSquareTrial.CustomConsequenceStop(Sender: TObject);
+procedure TFreeOperantSquareTrial.ConditionalStimulusStopped8Seconds(
+  Sender: TObject);
 begin
   case FTrialType of
-    ttB2, ttB3 : begin
-      CustomConsequence.Stop;
-      LogEvent('Risada.Fim');
+    ttB3 : begin
+      LogEvent('TomAlto20s.Inicio');
     end;
+    ttC1 : begin
+      LogEvent('TelaCinza.Fim');
+      Parent.Color := clGreen;
+    end
     else { do nothing };
   end;
 end;
+
+//procedure TFreeOperantSquareTrial.CustomConsequenceStop(Sender: TObject);
+//begin
+//  case FTrialType of
+//    ttB2, ttB3 : begin
+//      CustomConsequence.Stop;
+//      LogEvent('Risada.Fim');
+//    end;
+//    else { do nothing };
+//  end;
+//end;
 
 procedure TFreeOperantSquareTrial.Consequence(Sender: TObject);
 begin
